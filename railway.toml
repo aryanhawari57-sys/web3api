@@ -1,0 +1,24 @@
+# Railway deployment for the ShellShock web dashboard.
+#
+# The image is already fully described by the repo's Dockerfile (multi-stage,
+# Next standalone output, listens on $PORT). Railway only needs to be told which
+# file to build, so keep this file minimal and let the Dockerfile own the runtime.
+#
+# Set these service variables in the Railway dashboard before the first deploy:
+#   JWT_SECRET            long random string
+#   INITIAL_PASSWORD      the admin login password, do not leave as the default
+#   DATA_DIR              /app/data  (mount a volume here, or data dies on redeploy)
+#   BASE_URL              https://<your-service>.up.railway.app
+#   NEXT_PUBLIC_BASE_URL  same value, and set as a BUILD-time variable
+#   AUTH_COOKIE_SECURE    true
+#
+# No healthcheckPath on purpose: the app has no unauthenticated health endpoint and
+# "/" can redirect to the login page, which a healthcheck would read as a failure.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
